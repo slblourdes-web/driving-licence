@@ -4,6 +4,7 @@ import UIKit
 private enum HomeRoute: Hashable {
     case statistics
     case history
+    case errorReview
     case historicalResult(TestSessionSnapshot)
 }
 
@@ -38,16 +39,15 @@ struct HomeView: View {
                         }
                         .buttonStyle(.plain)
 
-                        NavigationLink(value: HomeRoute.statistics) {
-                            HomeActionLabel(title: "Mis estadísticas", symbol: "chart.bar.xaxis")
+                        NavigationLink(value: HomeRoute.errorReview) {
+                            HomeActionLabel(title: "Repasar errores", symbol: "arrow.counterclockwise")
                         }
                         .buttonStyle(.plain)
 
-                        HomeActionLabel(
-                            title: "Repasar errores",
-                            symbol: "arrow.counterclockwise",
-                            isDisabled: true
-                        )
+                        NavigationLink(value: HomeRoute.statistics) {
+                            HomeActionLabel(title: "Estadísticas", symbol: "chart.bar.xaxis")
+                        }
+                        .buttonStyle(.plain)
 
                         NavigationLink(value: HomeRoute.history) {
                             HomeActionLabel(title: "Historial", symbol: "clock.arrow.circlepath")
@@ -67,6 +67,8 @@ struct HomeView: View {
                     StatisticsView()
                 case .history:
                     HistoryView(onOpenTest: { navigationPath.append(HomeRoute.historicalResult($0)) })
+                case .errorReview:
+                    ErrorReviewView()
                 case .historicalResult(let result):
                     ResultsView(result: result, onHome: { navigationPath = NavigationPath() })
                 }
