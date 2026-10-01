@@ -98,23 +98,24 @@ struct StatisticsCalculator {
             }
             .sorted { $0.category.localizedStandardCompare($1.category) == .orderedAscending }
 
-        let hardest = questionStatistics
-            .filter { $0.timesAnswered > 0 }
-            .map { statistic in
-                DifficultQuestionStatistics(
-                    questionID: statistic.questionID,
-                    questionText: questionTextByID[statistic.questionID],
-                    timesAnswered: statistic.timesAnswered,
-                    incorrectCount: statistic.incorrectCount,
-                    errorPercentage: statistic.errorPercentage
-                )
-            }
-            .sorted {
-                if $0.incorrectCount != $1.incorrectCount { return $0.incorrectCount > $1.incorrectCount }
-                if $0.errorPercentage != $1.errorPercentage { return $0.errorPercentage > $1.errorPercentage }
-                if $0.timesAnswered != $1.timesAnswered { return $0.timesAnswered > $1.timesAnswered }
-                return $0.questionID < $1.questionID
-            }
+        let difficultQuestions: [DifficultQuestionStatistics] = questionStatistics.compactMap {
+            (statistic: QuestionStatistics) -> DifficultQuestionStatistics? in
+            guard statistic.timesAnswered > 0 else { return nil }
+            return DifficultQuestionStatistics(
+                questionID: statistic.questionID,
+                questionText: questionTextByID[statistic.questionID],
+                timesAnswered: statistic.timesAnswered,
+                incorrectCount: statistic.incorrectCount,
+                errorPercentage: statistic.errorPercentage
+            )
+        }
+        let hardest = difficultQuestions.sorted {
+            (lhs: DifficultQuestionStatistics, rhs: DifficultQuestionStatistics) -> Bool in
+            if lhs.incorrectCount != rhs.incorrectCount { return lhs.incorrectCount > rhs.incorrectCount }
+            if lhs.errorPercentage != rhs.errorPercentage { return lhs.errorPercentage > rhs.errorPercentage }
+            if lhs.timesAnswered != rhs.timesAnswered { return lhs.timesAnswered > rhs.timesAnswered }
+            return lhs.questionID < rhs.questionID
+        }
 
         return StudyStatistics(
             overall: summarize(tests),
