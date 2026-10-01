@@ -24,12 +24,26 @@ workflows:
     environment:
       xcode: 16.4
     scripts:
-      - name: Run DrivingStudyTests on iPhone 16 Simulator
+      - name: Diagnose available iOS Simulator destinations
         script: |
+          xcrun simctl list devices available
+          xcodebuild \
+            -project "DrivingStudy.xcodeproj" \
+            -scheme "DrivingStudy" \
+            -showdestinations
+      - name: Run DrivingStudyTests on an available iPhone Simulator
+        script: |
+          SIMULATOR_UDID="$(xcrun simctl list devices available -j | ruby -rjson -e '
+            devices = JSON.parse(STDIN.read).fetch("devices").values.flatten
+            simulator = devices.find { |device| device["name"].start_with?("iPhone") }
+            abort("No available iPhone Simulator was found") unless simulator
+            puts simulator.fetch("udid")
+          ')"
+          echo "Selected iOS Simulator UDID: ${SIMULATOR_UDID}"
           xcodebuild test \
             -project "DrivingStudy.xcodeproj" \
             -scheme "DrivingStudy" \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" \
+            -destination "platform=iOS Simulator,id=${SIMULATOR_UDID}" \
             -configuration Debug \
             -parallel-testing-enabled NO \
             CODE_SIGNING_ALLOWED=NO \
