@@ -1,0 +1,18 @@
+workflows:
+  ios-compile-check:
+    name: iOS Compile Check
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: 16.4
+    scripts:
+      - name: Compile DrivingStudy for iOS Simulator
+        script: |
+          xcodebuild \
+            -project "DrivingStudy.xcodeproj" \
+            -target "DrivingStudy" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
