@@ -64,7 +64,7 @@ struct HistoryView: View {
     private func historyRowContent(for test: StudyTestRecord) -> some View {
         HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 9) {
-                Text(test.date.formatted(date: .long, time: .short))
+                Text(test.date.formatted(date: .long, time: .shortened))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

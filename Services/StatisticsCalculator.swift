@@ -86,17 +86,25 @@ struct StatisticsCalculator {
             ScoreEvolutionPoint(id: test.id, sequence: index + 1, date: test.date, correctPercentage: test.correctPercentage)
         }
 
-        let categories = Dictionary(grouping: allAnswers, by: \.category)
-            .map { category, answers in
-                let correct = answers.filter(\.isCorrect).count
-                return CategoryStatistics(
-                    category: category,
-                    questionCount: answers.count,
-                    correctCount: correct,
-                    incorrectCount: answers.count - correct
-                )
-            }
-            .sorted { $0.category.localizedStandardCompare($1.category) == .orderedAscending }
+        let answersByCategory: [String: [TestAnswerSnapshot]] = Dictionary(
+            grouping: allAnswers,
+            by: { (answer: TestAnswerSnapshot) -> String in answer.category }
+        )
+        let unsortedCategories: [CategoryStatistics] = answersByCategory.map { entry in
+            let category: String = entry.key
+            let answers: [TestAnswerSnapshot] = entry.value
+            let correct = answers.filter { (answer: TestAnswerSnapshot) -> Bool in answer.isCorrect }.count
+            return CategoryStatistics(
+                category: category,
+                questionCount: answers.count,
+                correctCount: correct,
+                incorrectCount: answers.count - correct
+            )
+        }
+        let categories = unsortedCategories.sorted {
+            (lhs: CategoryStatistics, rhs: CategoryStatistics) -> Bool in
+            lhs.category.localizedStandardCompare(rhs.category) == .orderedAscending
+        }
 
         let difficultQuestions: [DifficultQuestionStatistics] = questionStatistics.compactMap {
             (statistic: QuestionStatistics) -> DifficultQuestionStatistics? in
