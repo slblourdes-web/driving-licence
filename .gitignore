@@ -1,0 +1,28 @@
+# Xcode build products and derived data
+build/
+DerivedData/
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Per-user Xcode settings and workspace state
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+*.hmap
+
+# Swift Package Manager generated files
+.build/
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+
+# macOS metadata
+.DS_Store
+._*
+
+# Temporary editor and log files
+*.swiftsourceinfo
+*.tmp
+*.log
